@@ -10,7 +10,8 @@
   "files": [
     "index.js",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "docs/"
   ],
   "keywords": [
     "opencode",

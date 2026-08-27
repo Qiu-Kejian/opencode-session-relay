@@ -89,6 +89,13 @@ node test/test.mjs
 
 覆盖：建链/归链、自定义 `handoffDir`、全自动三态（成功 / 注入失败保留 / 创建失败降级）、`@relay` 命令、决策降噪、链内多跳状态机。
 
+## 文档
+
+- [架构设计](./docs/architecture.md) — 核心概念、数据模型、ADR、可扩展点
+- [工作流程图](./docs/flow.md) — 决策 / 全自动交接 / 降级 / 命令（Mermaid）
+- [依赖的能力](./docs/capabilities.md) — ctx、hook/event、SDK 方法、平台差异、能力矩阵
+- [测试说明](./docs/testing.md) — 用例分组、mock、回归策略
+
 ## 许可
 
 [MIT](./LICENSE)
