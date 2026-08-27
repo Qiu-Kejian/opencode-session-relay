@@ -1,0 +1,16 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "//": "opencode-session-relay 插件注册示例。把 index.js 所在目录路径填到 plugin 数组。",
+
+  "plugin": [
+    {
+      "//": "方式一：本地目录引用",
+      "path": "./plugins/session-relay",
+      "config": {
+        "handoffDir": "handoff",
+        "enterRegex": "进入接力|接力模式",
+        "compactRegex": "压缩模式|进入压缩|改用压缩|改为压缩"
+      }
+    }
+  ]
+}
