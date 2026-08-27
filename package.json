@@ -1,6 +1,6 @@
 {
   "name": "opencode-session-relay",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "OpenCode 会话接力赛跑插件：上下文压缩前自动交接，让工作在新会话以完整、未劣化的上下文干净续跑（零压缩劣化）。",
   "type": "module",
   "main": "index.js",
