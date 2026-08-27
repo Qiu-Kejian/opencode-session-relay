@@ -73,6 +73,44 @@ export const SessionRelay = async (ctx) => {
     }
   };
 
+  // 骨架文书（R1+R3：插件先自行落盘，保证 docPath 一定存在，杜绝「docs 指针有、文件无」断链）。
+  // 模型随后经 relayPrompt 用 Write 覆盖补全；即便未补，接手会话也能读到链上下文，不丢底。
+  const seedDoc = (docPath, chainId, sessionID, docNumber) => {
+    try {
+      const skeleton = `# 会话接力交接文书（骨架 · 本链第 ${docNumber} 份）
+
+> 由 session-relay 插件自动落盘，保证本交接文书文件存在。请模型（relayPrompt 特使）用 Write 工具**覆盖本文件**，补全以下研发交接内容。
+
+## 链与会话跟踪信息
+
+- 链标识：${chainId}
+- 本会话 ID：${sessionID}
+- 交接文书编号：第 ${docNumber} 份（本链）
+- 落盘时间：${new Date().toISOString()}
+
+## 待补充内容（模型按项目 AGENTS.md 交接规范撰写后覆盖）
+
+### 一、任务背景与目标
+### 二、根因结论（如适用）
+### 三、已完成事项与结论（精确提交号/构建号/接口路径/回归结果）
+### 四、架构决策与理由（关键取舍 + file:line 依据）
+### 五、涉及仓库/分支对齐
+### 六、未解决/新发现问题
+### 七、下一步建议（可独立闭环）
+### 八、关键文件清单（file:line）
+### 九、git 状态快照（分支/提交/未推送）
+
+## 交接语（模型补充后按项目规范在文书内或回复末尾输出）
+`;
+      mkdirSync(handoffDir(dir), { recursive: true });
+      writeFileSync(docPath, skeleton, "utf8");
+      return true;
+    } catch (e) {
+      console.error(`[session-relay] 骨架文书落盘失败: ${e.message}`);
+      return false;
+    }
+  };
+
   const dateStamp = () => {
     const d = new Date();
     return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
@@ -206,7 +244,19 @@ export const SessionRelay = async (ctx) => {
 
         if (cid && state.chains[cid]) {
           const chain = state.chains[cid];
-          if (chain.used && chain.used.includes(sessionID)) return; // 本会话已交接
+          if (chain.used && chain.used.includes(sessionID)) {
+            // 本会话已交接。若最近文书缺失（交接断链：指针有、文件无），静默放行会丢上下文 → 改为告警而非沉默。
+            const usedDocs = chain.docs || [];
+            if (usedDocs.length && !existsSync(usedDocs[usedDocs.length - 1])) {
+              console.error(`[session-relay] 检测到交接文书缺失（已 used 会话 ${sessionID} 的最近文书未落盘）: ${usedDocs[usedDocs.length - 1]}`);
+              await notify(
+                "会话接力·文书缺失",
+                `本会话已交接但其最近交接文书未落盘：${usedDocs[usedDocs.length - 1]}。请检查该文书是否存在，避免接手会话丢上下文；可在原会话重写补落盘。`,
+                "warning",
+              );
+            }
+            return; // 本会话已交接，放行压缩
+          }
           chain.used = chain.used || [];
           chain.used.push(sessionID);
           const docs = (chain.docs = chain.docs || []);
@@ -214,6 +264,9 @@ export const SessionRelay = async (ctx) => {
           const docPath = join(handoffDir(directory), `${cid}-${dateStamp()}-交接-${docNumber}.md`);
           docs.push(docPath);
           saveState(directory, state);
+
+          // R1+R3：插件先落盘骨架文书，保证 docPath 文件一定存在（杜绝「docs 指针有、文件无」断链）。
+          seedDoc(docPath, cid, sessionID, docNumber);
 
           // --- 全自动：尝试创建接力会话（校验 sId）---
           let sId = null;
