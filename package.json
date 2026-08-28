@@ -1,12 +1,16 @@
 {
-  "name": "session-relay",
+  "name": "opencode-session-relay",
   "version": "1.3.2",
   "type": "module",
-  "description": "会话接力赛跑：压缩临界处理 + 纯文字决策交互（进入接力模式）+ 两阶段全自动交接（文书完成→session.idle自动建会话，按链分目录 + [N棒] 标题，哨兵兜底）",
+  "description": "会话接力赛跑插件：压缩临界处理 + 进入接力模式决策交互 + 两阶段全自动交接（文书完成→session.idle自动建会话，按链分目录 + [N棒] 标题，哨兵兜底）",
   "main": "index.js",
   "files": [
     "index.js",
-    "README.md"
+    "package.json",
+    "README.md",
+    "LICENSE",
+    "docs/",
+    "examples/"
   ],
   "keywords": [
     "opencode",
@@ -19,7 +23,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/qiu-kejian/session-relay.git"
+    "url": "https://github.com/Qiu-Kejian/opencode-session-relay.git"
   },
   "engines": {
     "node": ">=18"
