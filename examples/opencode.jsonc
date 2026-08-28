@@ -1,16 +1,21 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "//": "opencode-session-relay 插件注册示例。把 index.js 所在目录路径填到 plugin 数组。",
+  "//": "session-relay 插件注册示例：把 index.js/package.json 部署到配置目录 plugins/session-relay 后，在此处注册。",
 
   "plugin": [
     {
-      "//": "方式一：本地目录引用",
+      "//": "方式一：项目目录引用（相对本 config 文件）",
       "path": "./plugins/session-relay",
       "config": {
         "handoffDir": "handoff",
         "enterRegex": "进入接力|接力模式",
-        "compactRegex": "压缩模式|进入压缩|改用压缩|改为压缩"
+        "compactRegex": "压缩模式|自动压缩|直接压缩|转为压缩"
       }
+    },
+    {
+      "//": "方式二：全局用户配置目录活插件（生产部署形态）",
+      "path": "session-relay",
+      "config": {}
     }
   ]
 }

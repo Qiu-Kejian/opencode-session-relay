@@ -1,5 +1,14 @@
+# 环境文件（含发布 token，严禁提交）
+.env
+.env.local
+
+# npm
+.npmrc
+*.tgz
+
+# node
 node_modules/
+
+# 运行时产物
+handoff/
 *.log
-.handoff/
-*.local
-.DS_Store
